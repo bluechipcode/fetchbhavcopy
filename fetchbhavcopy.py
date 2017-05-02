@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.6
 
 #Script created by Venkatesan - released under GNU/GPL V3
-k#
+
 bhavcopyurl='http://www.nseindia.com/content/historical/EQUITIES/2007/DEC/cm11DEC2007bhav.csv';
 #http://www.nseindia.com/content/historical/DERIVATIVES/2008/JAN/fo22JAN2008bhav.csv
 
