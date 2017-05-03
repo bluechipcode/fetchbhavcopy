@@ -2,11 +2,10 @@
 
 #Script created by Venkatesan - released under GNU/GPL V3
 
-bhavcopyurl='http://www.nseindia.com/content/historical/EQUITIES/2007/DEC/cm11DEC2007bhav.csv';
-#http://www.nseindia.com/content/historical/DERIVATIVES/2008/JAN/fo22JAN2008bhav.csv
 
 #NSE
 #https://www.nseindia.com/content/historical/EQUITIES/2017/APR/cm19APR2017bhav.csv.zip
+#http://www.nseindia.com/content/historical/DERIVATIVES/2008/JAN/fo22JAN2008bhav.csv.zip
 #https://www.nseindia.com/archives/nsccl/var/C_VAR1_19042017_1.DAT
 #..upto _6.DAT
 #https://www.nseindia.com/archives/nsccl/volt/CMVOLT_28032011.CSV
