@@ -1,5 +1,5 @@
 # fetchbhavcopy
-Fetches EOD files from NSE/BSE bhavcopy and dumps the files locally. The script is built to enable downloading and maintaining the EOD files upto date. First run will fetch the entire history till date and the subsequent ones will update whatever is missing.
+Fetches EOD files from NSE/BSE bhavcopy and dumps the files locally. The script is built to enable download history and keep the EOD dump updated. First run will fetch the entire history till date and the subsequent ones will update whatever is missing. At every run all missing files till date will be downloaded and the dump will be updated with latest files as of run date.
 
 As long as you pass the same dump dir to every invocation (there is a default, which you can choose to override) the script will update the dump with missing files and not redownload existing files. 
 
