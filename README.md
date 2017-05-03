@@ -11,7 +11,7 @@ As long as you pass the same dump dir to every invocation (there is a default, w
 * Just delete the not found, retry files to prod the script to try download the not found scripts again - not needed generally
 
 
-Files fetched:
+**Files fetched:**
 * NSE
   * Equities EOD (eg. cm19APR2017bhav.csv.zip)
   * Futures, Options EOD(eg.fo19APR2017bhav.csv.zip)
