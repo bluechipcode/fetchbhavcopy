@@ -13,20 +13,20 @@ As long as you pass the same dump dir to every invocation (there is a default, w
 
 Files fetched:
 * NSE
-** Equities EOD (eg. cm19APR2017bhav.csv.zip)
-** Futures, Options EOD(eg.fo19APR2017bhav.csv.zip)
-** Volatility (eg. CMVOLT_28032011.CSV)
-** Market Activity (eg. MA200417.csv)
-** Maket Turnover (eg. MTO_01012002.DAT)
-** Margin trading (eg. eg Margintrdg_200417.zip)
-** Category turnover (eg. cat_turnover_200417.xls)
-** Short selling data (eg. shortselling_17072012.csv)
+  * Equities EOD (eg. cm19APR2017bhav.csv.zip)
+  * Futures, Options EOD(eg.fo19APR2017bhav.csv.zip)
+  * Volatility (eg. CMVOLT_28032011.CSV)
+  * Market Activity (eg. MA200417.csv)
+  * Maket Turnover (eg. MTO_01012002.DAT)
+  * Margin trading (eg. eg Margintrdg_200417.zip)
+  * Category turnover (eg. cat_turnover_200417.xls)
+  * Short selling data (eg. shortselling_17072012.csv)
 
-* Not yet:
-** Combined Report(eg. combined_report20042017.zip)
-** Variance reports (eg. C_VAR1_19042017_[1-6].DAT)
+  * **Not yet:**
+    * Combined Report(eg. combined_report20042017.zip)
+    * Variance reports (eg. C_VAR1_19042017_[1-6].DAT)
 
 * BSE
-** Equities (eq230707_csv.zip)
-** Futures, options (bhavcopy11-01-08.zip)
+  * Equities (eq230707_csv.zip)
+  * Futures, options (bhavcopy11-01-08.zip)
 
