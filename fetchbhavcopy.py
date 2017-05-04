@@ -2,7 +2,6 @@
 
 #Script created by Venkatesan - released under GNU/GPL V3
 
-
 #NSE
 #https://www.nseindia.com/content/historical/EQUITIES/2017/APR/cm19APR2017bhav.csv.zip
 #http://www.nseindia.com/content/historical/DERIVATIVES/2008/JAN/fo22JAN2008bhav.csv.zip
@@ -177,7 +176,7 @@ def print_table(table):
         
 
 summary=[("Exchange [Type]", "#NotFound")]
-def fetch_files(exch, type):
+def fetch_files(exch, type, args):
         #set the global socket timeout
         socket.setdefaulttimeout(100)
         curdir=os.getcwd()
@@ -191,13 +190,14 @@ def fetch_files(exch, type):
         log.info("Processing %s %s" % (exch,type))
         log.debug("Changed to dir [%s]" % os.getcwd())
         hdr=hdrmap[exch]
-        start_date=sdmap[exch][type]['start_date']
-        filet=sdmap[exch][type]['fname']
-        uzfilet=sdmap[exch][type]['uzfname']
-        urlt=sdmap[exch][type]['url']
-        get_url=sdmap[exch][type]['get_url']
-        get_file=sdmap[exch][type]['get_file']
-        fexists=sdmap[exch][type]['fexists']
+        curmap=sdmap[exch][type]
+        start_date=curmap['start_date'] if args.start_date == None else args.start_date
+        filet=curmap['fname']
+        uzfilet=curmap['uzfname']
+        urlt=curmap['url']
+        get_url=curmap['get_url']
+        get_file=curmap['get_file']
+        fexists=curmap['fexists']
         
         not_found=set()
         if os.path.exists("not_found.txt"):
@@ -224,6 +224,7 @@ def fetch_files(exch, type):
 
         not_found_from_file = len(not_found)
         today=datetime.now().date()
+        
         with open("retry.txt","w") as retry_file:
                 for i in list(rrule(DAILY, dtstart=start_date, until=today, byweekday=(MO,TU,WE,TH,FR))):
                         if (i.month, i.day) in holidays:
@@ -252,24 +253,71 @@ def fetch_files(exch, type):
         os.chdir(curdir)         
         log.debug("Changed back to dir [%s]" % os.getcwd())                
 
+def valid_start_date(s):
+    try:
+        s=s.upper()
+        p = s.split()
+        lp = len(p)
+
+        yr=datetime.now().year
+        mon=1
+        dd=1
+        
+        if lp == 1:
+                #yr/mon given
+                if p[0] in monthstr:
+                        mon = 1 + monthstr.index(p[0])
+                else:
+                        yr=int(p[0])
+                        
+                return datetime(yr,mon,dd)
+        elif lp==2:
+                mon = 1 + monthstr.index(p[0])
+                yr=int(p[1])
+                return datetime(yr,mon,dd)
+        elif lp==3:
+                #all 3 given
+                return datetime.strptime(s, '%d %b %Y')
+                
+        else:
+                raise ValueError()
+    except:
+        msg = "Invalid start date: '{0}'.".format(s)
+        raise argparse.ArgumentTypeError(msg)
+
+class MyFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawTextHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    pass
+
 if __name__ == "__main__":
-        parser = argparse.ArgumentParser(description='Fetch bhavcopy archives from NSE/BSE',
-                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        parser = argparse.ArgumentParser(description="Fetch bhavcopy archives from NSE/BSE.\n"
+                                         + "By default, only files from last 2 weeks are fetched - can be overridden by  switches below.",
+                                         formatter_class=MyFormatter)
+        
         parser.add_argument("-d","--dump-dir",help="Directory to dump the files to", default="dumps/bhavcopy")
+        parser.add_argument("-a","--fetch-all",action='store_true',help="Download from start of history")
+        parser.add_argument("-s","--start-date",help="Specify a starting date \n"
+                            + "Any valid year can be specified, but actual year used depends on data available \n"
+                            + "Eg. NSE equities bhavcopy is available only from 1994 so year=max(year specified, 1994)\n"
+                            + "Accepted formats:\n"
+                            + "* yyyy (From 1 JAN of given year, eg. 1999)\n"
+                            + "* mon yyyy (From day 1, eg. JAN 1999)\n"
+                            + "* dd mon yyyy (eg. 12 JAN 1999)\n"
+                            + "* mon (From current year, day 1 of given month, eg. JAN)\n",
+                            type=valid_start_date)
         args = parser.parse_args()
 
-        log.debug(str(args))
+        log.debug("args=%s" % str(args))
         log.info("Dumping to dir [%s]" % args.dump_dir)
         os.makedirs(args.dump_dir, exist_ok=True)
         os.chdir(args.dump_dir)
 
-        fetch_files("nse", "eod_stk")
-        fetch_files("nse", "eod_fo")
-        fetch_files("nse", "eod_mto")
-        fetch_files("nse", "eod_shortsell")
-        fetch_files("nse", "eod_vol")
-        fetch_files("bse", "eod_stk")
-        fetch_files("bse", "eod_fo")
+        fetch_files("nse", "eod_stk", args)
+        fetch_files("nse", "eod_fo", args)
+        fetch_files("nse", "eod_mto", args)
+        fetch_files("nse", "eod_shortsell", args)
+        fetch_files("nse", "eod_vol", args)
+        fetch_files("bse", "eod_stk", args)
+        fetch_files("bse", "eod_fo", args)
 
         log.info("All fetch complete, summary:")
         log.info(print_table(summary))
