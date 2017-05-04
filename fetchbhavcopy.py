@@ -20,7 +20,6 @@
 #http://www.bseindia.com/download/BhavCopy/Equity/eq230707_csv.zip
 #http://www.bseindia.com/download/Bhavcopy/Derivative/bhavcopy11-01-08.zip
 
-from datetime import date
 from dateutil.relativedelta import *
 from dateutil.easter import *
 from dateutil.rrule import *
@@ -303,7 +302,8 @@ if __name__ == "__main__":
                             + "* mon yyyy (From day 1, eg. JAN 1999)\n"
                             + "* dd mon yyyy (eg. 12 JAN 1999)\n"
                             + "* mon (From current year, day 1 of given month, eg. JAN)\n",
-                            type=valid_start_date)
+                            type=valid_start_date,
+                            default=datetime.now().date() - timedelta(weeks=2))
         args = parser.parse_args()
 
         log.debug("args=%s" % str(args))
