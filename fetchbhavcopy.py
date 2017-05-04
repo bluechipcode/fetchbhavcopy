@@ -59,7 +59,7 @@ sdmap = {
                         'url':'https://www.nseindia.com/content/historical/EQUITIES/%d/%s',
                         'fname':"cm%02d%s%dbhav.csv.zip",
                         'uzfname':"cm%02d%s%dbhav.csv",
-                        'start_date':datetime(1994,11,3),
+                        'start_date':datetime(1994,11,3).date(),
                         'get_url':lambda urlt,d:urlt%(d.year,monthstr[d.month-1]),
                         'get_file': lambda filet,d: filet%(d.day,monthstr[d.month-1],d.year),
                         'fexists': lambda f,uzf: os.path.exists(f) or os.path.exists(uzf) 
@@ -68,7 +68,7 @@ sdmap = {
                         'url':'https://www.nseindia.com/content/historical/DERIVATIVES/%d/%s',
                         'fname':"fo%02d%s%dbhav.csv.zip",
                         'uzfname':"fo%02d%s%dbhav.csv",
-                        'start_date':datetime(2000,6,12),
+                        'start_date':datetime(2000,6,12).date(),
                         'get_url':lambda urlt,d:urlt%(d.year,monthstr[d.month-1]),
                         'get_file': lambda filet,d: filet%(d.day,monthstr[d.month-1],d.year),
                         'fexists': lambda f,uzf: os.path.exists(f) or os.path.exists(uzf) 
@@ -77,7 +77,7 @@ sdmap = {
                         'url':'https://www.nseindia.com/archives/equities/mto',
                         'fname':"MTO_%02d%02d%02d.DAT",
                         'uzfname':None,
-                        'start_date':datetime(2002,1,1),
+                        'start_date':datetime(2002,1,1).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
                         'fexists': lambda f,uzf: os.path.exists(f) 
@@ -87,7 +87,7 @@ sdmap = {
                         'url':'https://www.nseindia.com/archives/equities/shortSelling',
                         'fname':"shortselling_%02d%02d%d.csv",
                         'uzfname':None,
-                        'start_date':datetime(2012,7,17),
+                        'start_date':datetime(2012,7,17).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
                         'fexists': lambda f,uzf: os.path.exists(f) 
@@ -96,7 +96,7 @@ sdmap = {
                         'url':'https://www.nseindia.com/archives/nsccl/volt',
                         'fname':"CMVOLT_%02d%02d%d.CSV",
                         'uzfname': None,
-                        'start_date':datetime(2011,4,17),
+                        'start_date':datetime(2011,4,17).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
                         'fexists': lambda f,uzf: os.path.exists(f) 
@@ -108,7 +108,7 @@ sdmap = {
                         'url':'http://www.bseindia.com/download/BhavCopy/Equity',
                         'fname':"eq%02d%02d%02d_csv.zip",
                         'uzfname':"eq%02d%02d%02d.csv",
-                        'start_date':datetime(2007,7,7),
+                        'start_date':datetime(2007,7,7).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year%2000),
                         'fexists': lambda f,uzf: os.path.exists(f) or os.path.exists(uzf) 
@@ -117,7 +117,7 @@ sdmap = {
                         'url':'http://www.bseindia.com/download/Bhavcopy/Derivative',
                         'fname':"bhavcopy%02d-%02d-%02d.zip",
                         'uzfname':"bhavcopy%02d-%02d-%02d.xls",
-                        'start_date':datetime(2008,1,11),
+                        'start_date':datetime(2008,1,11).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year%2000),
                         'fexists': lambda f,uzf: os.path.exists(f) or os.path.exists(uzf) 
@@ -190,7 +190,7 @@ def fetch_files(exch, type, args):
         log.debug("Changed to dir [%s]" % os.getcwd())
         hdr=hdrmap[exch]
         curmap=sdmap[exch][type]
-        start_date=curmap['start_date'] if args.start_date == None else args.start_date
+        start_date=curmap['start_date'] if args.fetch_all else max(curmap['start_date'], args.start_date)
         filet=curmap['fname']
         uzfilet=curmap['uzfname']
         urlt=curmap['url']
@@ -269,14 +269,14 @@ def valid_start_date(s):
                 else:
                         yr=int(p[0])
                         
-                return datetime(yr,mon,dd)
+                return datetime(yr,mon,dd).date()
         elif lp==2:
                 mon = 1 + monthstr.index(p[0])
                 yr=int(p[1])
-                return datetime(yr,mon,dd)
+                return datetime(yr,mon,dd).date()
         elif lp==3:
                 #all 3 given
-                return datetime.strptime(s, '%d %b %Y')
+                return datetime.strptime(s, '%d %b %Y').date()
                 
         else:
                 raise ValueError()
