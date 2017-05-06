@@ -30,7 +30,7 @@ As long as you pass the same dump dir to every invocation (there is a default, w
   * Equities (eq230707_csv.zip)
   * Futures, options (bhavcopy11-01-08.zip)
 
-##Running the script
+## Running the script
 ```
 usage: fetchbhavcopy.py [-h] [-d DUMP_DIR] [-a] [-s START_DATE]
 
