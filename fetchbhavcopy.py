@@ -291,7 +291,7 @@ if __name__ == "__main__":
         default_start=datetime.now().date() - timedelta(weeks=2)
         parser = argparse.ArgumentParser(description="Fetch bhavcopy archives from NSE/BSE.\n"
                                          + "    By default, only files from last 2 weeks are fetched - can be overridden by  switches below.\n"
-                                         + "    Typical usage is download all data for the first time and then use default (last 2 weeks only) \n"
+                                         + "    Typical usage is to download all data for the first time and then use default (last 2 weeks only) \n"
                                          + "    to speed up the fetch\n"
                                          + "\nSample usage:\n"
                                          + '  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s "20 apr 2017"\n'

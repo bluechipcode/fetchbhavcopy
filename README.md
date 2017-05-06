@@ -36,7 +36,7 @@ usage: fetchbhavcopy.py [-h] [-d DUMP_DIR] [-a] [-s START_DATE]
 
 Fetch bhavcopy archives from NSE/BSE.
     By default, only files from last 2 weeks are fetched - can be overridden by  switches below.
-    Typical usage is download all data for the first time and then use default (last 2 weeks only) 
+    Typical usage is to download all data for the first time and then use default (last 2 weeks only) 
     to speed up the fetch
 
 Sample usage:
