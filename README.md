@@ -30,3 +30,37 @@ As long as you pass the same dump dir to every invocation (there is a default, w
   * Equities (eq230707_csv.zip)
   * Futures, options (bhavcopy11-01-08.zip)
 
+*Running the script*
+```
+usage: fetchbhavcopy.py [-h] [-d DUMP_DIR] [-a] [-s START_DATE]
+
+Fetch bhavcopy archives from NSE/BSE.
+    By default, only files from last 2 weeks are fetched - can be overridden by  switches below.
+    Typical usage is download all data for the first time and then use default (last 2 weeks only) 
+    to speed up the fetch
+
+Sample usage:
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -s "20 apr 2017"
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -s "20 APR" #downloads from given date of current year
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -s 2015 #from jan 1 2015
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -s feb #from feb 1 of current year, case of month string doesnt matter
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -a #all available data - 20+ years for equities
+  fetchbhavcopy.py -d ..\data\dumpshavcopy  #for last 2 weeks - default
+  fetchbhavcopy.py   #for last 2 weeks and use default dump directory
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d DUMP_DIR, --dump-dir DUMP_DIR
+                        Directory to dump the files to (default: dumps/bhavcopy)
+  -a, --fetch-all       Download from start of history (default: False)
+  -s START_DATE, --start-date START_DATE
+                        Specify a starting date 
+                        Any valid year can be specified, but actual year used depends on data available 
+                        Eg. NSE equities bhavcopy is available only from 1994 so year=max(year specified, 1994)
+                        Accepted formats:
+                        * yyyy (From 1 JAN of given year, eg. 1999)
+                        * mon yyyy (From day 1, eg. JAN 1999)
+                        * dd mon yyyy (eg. 12 JAN 1999)
+                        * mon (From current year, day 1 of given month, eg. JAN)
+                         (default: 2017-04-22)
+```
