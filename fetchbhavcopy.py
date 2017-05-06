@@ -288,9 +288,20 @@ class MyFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawTextHelpFo
     pass
 
 if __name__ == "__main__":
+        default_start=datetime.now().date() - timedelta(weeks=2)
         parser = argparse.ArgumentParser(description="Fetch bhavcopy archives from NSE/BSE.\n"
-                                         + "By default, only files from last 2 weeks are fetched - can be overridden by  switches below.",
-                                         formatter_class=MyFormatter)
+                                         + "    By default, only files from last 2 weeks are fetched - can be overridden by  switches below.\n"
+                                         + "    Typical usage is download all data for the first time and then use default (last 2 weeks only) \n"
+                                         + "    to speed up the fetch\n"
+                                         + "\nSample usage:\n"
+                                         + '  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s "20 apr 2017"\n'
+                                         + '  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s "20 APR" #downloads from given date of current year\n'
+                                         + '  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s 2015 #from jan 1 2015\n'
+                                         + '  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s feb #from feb 1 of current year, case of month string doesnt matter\n'
+                                         + '  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -a #all available data - 20+ years for equities\n'
+                                         + '  fetchbhavcopy.py -d ..\data\dumps\bhavcopy  #for last 2 weeks - default\n'
+                                         + '  fetchbhavcopy.py   #for last 2 weeks and use default dump directory\n'
+                                         ,formatter_class=MyFormatter)
         
         parser.add_argument("-d","--dump-dir",help="Directory to dump the files to", default="dumps/bhavcopy")
         parser.add_argument("-a","--fetch-all",action='store_true',help="Download from start of history")
@@ -303,10 +314,18 @@ if __name__ == "__main__":
                             + "* dd mon yyyy (eg. 12 JAN 1999)\n"
                             + "* mon (From current year, day 1 of given month, eg. JAN)\n",
                             type=valid_start_date,
-                            default=datetime.now().date() - timedelta(weeks=2))
+                            default=default_start)
         args = parser.parse_args()
 
         log.debug("args=%s" % str(args))
+        if  args.fetch_all:
+                log.info(default_start.strftime("Fetching all available data - might take quite some time, look at --help for other options"))
+        else:
+                if args.start_date == default_start:
+                        log.info(default_start.strftime("Fetching only from  [%d %b %Y], look at --help for other options"))
+                else:
+                        log.info(args.start_date.strftime("Fetching from  [%d %b %Y], look at --help for other options"))
+
         log.info("Dumping to dir [%s]" % args.dump_dir)
         os.makedirs(args.dump_dir, exist_ok=True)
         os.chdir(args.dump_dir)
