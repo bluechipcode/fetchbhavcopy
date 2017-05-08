@@ -27,6 +27,7 @@ from dateutil.parser import *
 from datetime import *
 
 import os
+import glob
 import sys
 import argparse
 import socket
@@ -57,74 +58,69 @@ sdmap = {
         'nse': {
                 "eod_stk" : {
                         'url':'https://www.nseindia.com/content/historical/EQUITIES/%d/%s',
-                        'fname':"cm%02d%s%dbhav.csv.zip",
-                        'uzfname':"cm%02d%s%dbhav.csv",
+                        'fname':"cm%02d%s%dbhav",
+                        'ext':".csv.zip",
                         'start_date':datetime(1994,11,3).date(),
                         'get_url':lambda urlt,d:urlt%(d.year,monthstr[d.month-1]),
                         'get_file': lambda filet,d: filet%(d.day,monthstr[d.month-1],d.year),
-                        'fexists': lambda f,uzf: os.path.exists(f) or os.path.exists(uzf) 
                 },
                 "eod_fo" : {
                         'url':'https://www.nseindia.com/content/historical/DERIVATIVES/%d/%s',
-                        'fname':"fo%02d%s%dbhav.csv.zip",
-                        'uzfname':"fo%02d%s%dbhav.csv",
+                        'fname':"fo%02d%s%dbhav",
+                        'ext':".csv.zip",
                         'start_date':datetime(2000,6,12).date(),
                         'get_url':lambda urlt,d:urlt%(d.year,monthstr[d.month-1]),
                         'get_file': lambda filet,d: filet%(d.day,monthstr[d.month-1],d.year),
-                        'fexists': lambda f,uzf: os.path.exists(f) or os.path.exists(uzf) 
                 },
                 "eod_mto" : {
                         'url':'https://www.nseindia.com/archives/equities/mto',
-                        'fname':"MTO_%02d%02d%02d.DAT",
-                        'uzfname':None,
+                        'fname':"MTO_%02d%02d%02d",
+                        'ext':'.DAT',
                         'start_date':datetime(2002,1,1).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
-                        'fexists': lambda f,uzf: os.path.exists(f) 
 
                 },
                 "eod_shortsell" : {
                         'url':'https://www.nseindia.com/archives/equities/shortSelling',
-                        'fname':"shortselling_%02d%02d%d.csv",
-                        'uzfname':None,
+                        'fname':"shortselling_%02d%02d%d",
+                        'ext':'.csv',                        
                         'start_date':datetime(2012,7,17).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
-                        'fexists': lambda f,uzf: os.path.exists(f) 
                 },
                 "eod_vol" : {
                         'url':'https://www.nseindia.com/archives/nsccl/volt',
-                        'fname':"CMVOLT_%02d%02d%d.CSV",
-                        'uzfname': None,
+                        'fname':"CMVOLT_%02d%02d%d",
+                        'ext':'.CSV',
                         'start_date':datetime(2011,4,17).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
-                        'fexists': lambda f,uzf: os.path.exists(f) 
                 },
 
         },
         'bse': {
                 "eod_stk" : {
                         'url':'http://www.bseindia.com/download/BhavCopy/Equity',
-                        'fname':"eq%02d%02d%02d_csv.zip",
-                        'uzfname':"eq%02d%02d%02d.csv",
+                        'fname':"eq%02d%02d%02d",
+                        'ext':'_csv.zip',
                         'start_date':datetime(2007,7,7).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year%2000),
-                        'fexists': lambda f,uzf: os.path.exists(f) or os.path.exists(uzf) 
                 },
                 "eod_fo" : {
                         'url':'http://www.bseindia.com/download/Bhavcopy/Derivative',
-                        'fname':"bhavcopy%02d-%02d-%02d.zip",
-                        'uzfname':"bhavcopy%02d-%02d-%02d.xls",
+                        'fname':"bhavcopy%02d-%02d-%02d",
+                        'ext':'.zip',
                         'start_date':datetime(2008,1,11).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year%2000),
-                        'fexists': lambda f,uzf: os.path.exists(f) or os.path.exists(uzf) 
                 },
         },
-
 }
+
+def fexists(pat):
+        return bool(glob.glob(pat+'*.*'))
 
 #mon, day
 holidays={(1,1), #new year
@@ -192,11 +188,10 @@ def fetch_files(exch, type, args):
         curmap=sdmap[exch][type]
         start_date=curmap['start_date'] if args.fetch_all else max(curmap['start_date'], args.start_date)
         filet=curmap['fname']
-        uzfilet=curmap['uzfname']
+        ext=curmap['ext']
         urlt=curmap['url']
         get_url=curmap['get_url']
         get_file=curmap['get_file']
-        fexists=curmap['fexists']
         
         not_found=set()
         if os.path.exists("not_found.txt"):
@@ -232,16 +227,15 @@ def fetch_files(exch, type, args):
                         
                         log.debug( 'Fetching for %s' % str(i))
                         fname = get_file(filet,i)
-                        uzfname = None if uzfilet == None else get_file(uzfilet,i)
 
-                        if  fexists(fname, uzfname):
+                        if  fexists(fname):
                                 log.debug("Skipping %s (already exists)" % fname)
                         else:
-                                url = "%s/%s" % (get_url(urlt,i), fname)
+                                url = "%s/%s%s" % (get_url(urlt,i), fname, ext)
                                 if  url  in not_found:
                                         log.debug( 'In not found list, skipping  [%s]' % fname)
                                 else:
-                                        store_url_to_file(hdr, url, fname, retry_file, not_found,i.date()==today)
+                                        store_url_to_file(hdr, url, fname+ext, retry_file, not_found,i.date()==today)
 
         summary.append(("%s [%s]" % (exch, type), str(len(not_found))));
         if len(not_found) > not_found_from_file:
@@ -281,7 +275,7 @@ def valid_start_date(s):
         else:
                 raise ValueError()
     except:
-        msg = "Invalid start date: '{0}'.".format(s)
+        msg = "Invalid start date: [{0}].".format(s)
         raise argparse.ArgumentTypeError(msg)
 
 class MyFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawTextHelpFormatter, argparse.RawDescriptionHelpFormatter):
