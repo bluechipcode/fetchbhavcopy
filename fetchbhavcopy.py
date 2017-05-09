@@ -102,8 +102,8 @@ sdmap = {
         'bse': {
                 "eod_stk" : {
                         'url':'http://www.bseindia.com/download/BhavCopy/Equity',
-                        'fname':"eq%02d%02d%02d",
-                        'ext':'_csv.zip',
+                        'fname':"EQ%02d%02d%02d",
+                        'ext':'_CSV.zip',
                         'start_date':datetime(2007,7,7).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year%2000),
