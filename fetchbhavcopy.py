@@ -2,23 +2,15 @@
 
 #Script created by Venkatesan - released under GNU/GPL V3
 
-#NSE
-#https://www.nseindia.com/content/historical/EQUITIES/2017/APR/cm19APR2017bhav.csv.zip
-#http://www.nseindia.com/content/historical/DERIVATIVES/2008/JAN/fo22JAN2008bhav.csv.zip
 #https://www.nseindia.com/archives/nsccl/var/C_VAR1_19042017_1.DAT
 #..upto _6.DAT
-#https://www.nseindia.com/archives/nsccl/volt/CMVOLT_28032011.CSV
+
 #https://www.nseindia.com/archives/equities/mkt/MA200417.csv
-#https://www.nseindia.com/archives/equities/mto/MTO_01012002.DAT
 #https://www.nseindia.com/archives/equities/margin/Margintrdg_200417.zip
 #https://www.nseindia.com/archives/equities/cat/cat_turnover_200417.xls
-#https://www.nseindia.com/archives/equities/shortSelling/shortselling_17072012.csv
 #https://www.nseindia.com/archives/combine_report/combined_report20042017.zip
 
 
-#BSE, earliest
-#http://www.bseindia.com/download/BhavCopy/Equity/eq230707_csv.zip
-#http://www.bseindia.com/download/Bhavcopy/Derivative/bhavcopy11-01-08.zip
 
 from dateutil.relativedelta import *
 from dateutil.easter import *
@@ -56,6 +48,7 @@ monthstr=['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 
 
 sdmap = {
         'nse': {
+                #https://www.nseindia.com/content/historical/EQUITIES/2017/APR/cm19APR2017bhav.csv.zip
                 "eod_stk" : {
                         'url':'https://www.nseindia.com/content/historical/EQUITIES/%d/%s',
                         'fname':"cm%02d%s%dbhav",
@@ -64,6 +57,7 @@ sdmap = {
                         'get_url':lambda urlt,d:urlt%(d.year,monthstr[d.month-1]),
                         'get_file': lambda filet,d: filet%(d.day,monthstr[d.month-1],d.year),
                 },
+                #http://www.nseindia.com/content/historical/DERIVATIVES/2008/JAN/fo22JAN2008bhav.csv.zip
                 "eod_fo" : {
                         'url':'https://www.nseindia.com/content/historical/DERIVATIVES/%d/%s',
                         'fname':"fo%02d%s%dbhav",
@@ -72,6 +66,7 @@ sdmap = {
                         'get_url':lambda urlt,d:urlt%(d.year,monthstr[d.month-1]),
                         'get_file': lambda filet,d: filet%(d.day,monthstr[d.month-1],d.year),
                 },
+                #https://www.nseindia.com/archives/equities/mto/MTO_01012002.DAT
                 "eod_mto" : {
                         'url':'https://www.nseindia.com/archives/equities/mto',
                         'fname':"MTO_%02d%02d%02d",
@@ -81,6 +76,7 @@ sdmap = {
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
 
                 },
+                #https://www.nseindia.com/archives/equities/shortSelling/shortselling_17072012.csv
                 "eod_shortsell" : {
                         'url':'https://www.nseindia.com/archives/equities/shortSelling',
                         'fname':"shortselling_%02d%02d%d",
@@ -89,6 +85,7 @@ sdmap = {
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
                 },
+                #https://www.nseindia.com/archives/nsccl/volt/CMVOLT_28032011.CSV
                 "eod_vol" : {
                         'url':'https://www.nseindia.com/archives/nsccl/volt',
                         'fname':"CMVOLT_%02d%02d%d",
@@ -97,9 +94,131 @@ sdmap = {
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
                 },
+                #https://nseindia.com/content/indices/ind_close_all_09052017.csv
+                "ind_close": {
+                        'url': 'https://nseindia.com/content/indices',
+                        'fname':'ind_close_all_%02d%02d%d',
+                        'ext':'.csv',
+                        'start_date':datetime(2012,2,21).date(),
+                        'get_url':lambda urlt,d:urlt,
+                        'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
+                },
 
+                #https://www.nseindia.com/archives/equities/margin/Margintrdg_200417.zip
+                #https://www.nseindia.com/archives/equities/cat/cat_turnover_200417.xls
+                #https://www.nseindia.com/archives/combine_report/combined_report20042017.zip
+
+                #https://nseindia.com/content/indices/mcwb_mar12.zip
+                #per month
+                # "mcwb": {
+                #         'url': 'https://nseindia.com/content/indices',
+                #         'fname':'mcwb_%s%d',
+                #         'ext':'.zip',
+                #         'start_date':datetime(2008,1,1).date(),
+                #         'get_url':lambda urlt,d:urlt,
+                #         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
+                # },
+                #https://nseindia.com/content/indices/ind_ic_2001.zip
+                #per year
+                # "imp_cost": {
+                #         'url': 'https://nseindia.com/content/indices',
+                #         'fname':'ind_ic_%d',
+                #         'ext':'.zip',
+                #         'start_date':datetime(2001,1,1).date(),
+                #         'get_url':lambda urlt,d:urlt,
+                #         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
+                # },
+                #https://nseindia.com/content/indices/indices_dataApr2013.zip
+                #per mon
+                # "ind_mcw": {
+                #         'url': 'https://nseindia.com/content/indices',
+                #         'fname':'indices_data%s%d',
+                #         'ext':'.zip',
+                #         'start_date':datetime(2014,4,1).date(),
+                #         'get_url':lambda urlt,d:urlt,
+                #         'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
+                # },
+                #https://nseindia.com/archives/fo/sec_ban/fo_secban_01012008.csv
+                "fo_secban": {
+                        'url': 'https://nseindia.com/archives/fo/sec_ban',
+                        'fname':'fo_secban_%02d%02d%d',
+                        'ext':'.csv',
+                        'start_date':datetime(2008,1,1).date(),
+                        'get_url':lambda urlt,d:urlt,
+                        'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
+                },
+                #https://www.nseindia.com/archives/equities/mkt/mkt17022012.doc
+                #https://www.nseindia.com/archives/equities/mkt/mkt03012000.doc
+                "mar.old": {
+                        'url': 'https://www.nseindia.com/archives/equities/mkt',
+                        'fname':'mkt%02d%02d%d',
+                        'ext':'.doc',
+                        'start_date':datetime(2000,1,3).date(),
+                        'end_date':datetime(2012,2,17).date(),
+                        'get_url':lambda urlt,d:urlt,
+                        'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
+                },
+                #https://www.nseindia.com/archives/equities/mkt/MA200417.csv
+                "mar": {
+                        'url': 'https://www.nseindia.com/archives/equities/mkt',
+                        'fname':'MA%02d%02d%02d',
+                        'ext':'.csv',
+                        'start_date':datetime(2012,2,21).date(),
+                        'get_url':lambda urlt,d:urlt,
+                        'get_file': lambda filet,d: filet%(d.day,d.month,d.year%100),
+                },
+                #https://nseindia.com/archives/fo/mkt/fo050701.doc
+                "fo_rep.old": {
+                        'url': 'https://www.nseindia.com/archives/fo/mkt',
+                        'fname':'fo%02d%02d%02d',
+                        'ext':'.doc',
+                        'start_date':datetime(2001,7,5).date(),
+                        'end_date':datetime(2011,2,22).date(),
+                        'get_url':lambda urlt,d:urlt,
+                        'get_file': lambda filet,d: filet%(d.day,d.month,d.year%100),
+                },
+                "fo_rep": {
+                        'url': 'https://www.nseindia.com/archives/fo/mkt',
+                        'fname':'fo%02d%02d%02d',
+                        'ext':'.zip',
+                        'start_date':datetime(2011,2,23).date(),
+                        'get_url':lambda urlt,d:urlt,
+                        'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
+                },
+
+                #https://nseindia.com/archives/nsccl/sett/FOSett_prce_19102001.csv
+                "fosett_prce": {
+                        'url': 'https://nseindia.com/archives/nsccl/sett',
+                        'fname':'FOSett_prce_%02d%02d%d',
+                        'ext':'.csv',
+                        'start_date':datetime(2001,10,19).date(),
+                        'get_url':lambda urlt,d:urlt,
+                        'get_file': lambda filet,d: filet%(d.day,d.month,d.year),
+                },
+                #https://nseindia.com/archives/nsccl/cli/oi_cli_limit_02-JAN-2002.lst
+                "cli_poslimit": {
+                        'url': 'https://nseindia.com/archives/nsccl/cli',
+                        'fname':'oi_cli_limit_%02d-%s-%d',
+                        'ext':'.lst',
+                        'start_date':datetime(2002,1,2).date(),
+                        'get_url':lambda urlt,d:urlt,
+                        'get_file': lambda filet,d: filet%(d.day,monthstr[d.month-1],d.year),
+                },
+                #https://nseindia.com/content/nsccl/fao_participant_vol_15052017.csv
+                #https://nseindia.com/content/nsccl/fao_participant_oi_15052017.csv
+                #https://nseindia.com/content/nsccl/fao_top10cm_to_15052017.csv
+                #https://nseindia.com/content/fo/bp150517.csv
+                #https://nseindia.com/archives/cd/bhav/CD_Bhavcopy150517.zip
+                #https://nseindia.com/archives/cd/sett/CDSett_prce_15052017.csv
+                
+                #https://nseindia.com/content/equities/sec_list.csv
+                #https://nseindia.com/content/nsccl/CPR.txt
+                #https://nseindia.com/content/nsccl/elm.csv
+                #https://nseindia.com/content/equities/eq_etfseclist.csv
+                
         },
         'bse': {
+                #http://www.bseindia.com/download/BhavCopy/Equity/eq230707_csv.zip
                 "eod_stk" : {
                         'url':'http://www.bseindia.com/download/BhavCopy/Equity',
                         'fname':"EQ%02d%02d%02d",
@@ -108,6 +227,8 @@ sdmap = {
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(d.day,d.month,d.year%2000),
                 },
+                
+                #http://www.bseindia.com/download/Bhavcopy/Derivative/bhavcopy11-01-08.zip
                 "eod_fo" : {
                         'url':'http://www.bseindia.com/download/Bhavcopy/Derivative',
                         'fname':"bhavcopy%02d-%02d-%02d",
@@ -134,8 +255,8 @@ holidays={(1,1), #new year
         }
 
 hdrmap= { 'nse' : {'User-Agent': 'mybot', 'Accept': '*/*',
-                "Referer": "https://www.nseindia.com/products/content/equities/equities/archieve_eq.htm"},
-        'bse' : {},
+                   "Referer": "https://www.nseindia.com/products/content/equities/equities/archieve_eq.htm"},
+          'bse' : {},
 }
 
 def store_url_to_file(hdr, url, fname, retry_file, not_found,istoday=None):
@@ -218,9 +339,11 @@ def fetch_files(exch, type, args):
 
         not_found_from_file = len(not_found)
         today=datetime.now().date()
-        
+        end_date = curmap['end_date']  if 'end_date' in curmap else today
+
+        log.info("Fetching from [%s] -> [%s]" % (str(start_date), str(end_date)))
         with open("retry.txt","w") as retry_file:
-                for i in list(rrule(DAILY, dtstart=start_date, until=today, byweekday=(MO,TU,WE,TH,FR))):
+                for i in list(rrule(DAILY, dtstart=start_date, until=end_date, byweekday=(MO,TU,WE,TH,FR))):
                         if (i.month, i.day) in holidays:
                                 log.debug('Skipping holiday: %s' % str(i))
                                 continue
@@ -324,14 +447,12 @@ if __name__ == "__main__":
         os.makedirs(args.dump_dir, exist_ok=True)
         os.chdir(args.dump_dir)
 
-        fetch_files("nse", "eod_stk", args)
-        fetch_files("nse", "eod_fo", args)
-        fetch_files("nse", "eod_mto", args)
-        fetch_files("nse", "eod_shortsell", args)
-        fetch_files("nse", "eod_vol", args)
-        fetch_files("bse", "eod_stk", args)
-        fetch_files("bse", "eod_fo", args)
-
+        #fetch_files("nse", "fo_rep", args)
+        
+        for k1, v1 in sdmap.items():
+                for k2,v2 in v1.items():
+                        fetch_files(k1, k2, args)
+                        
         log.info("All fetch complete, summary:")
         log.info(print_table(summary))
 
