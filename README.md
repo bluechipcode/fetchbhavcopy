@@ -285,12 +285,12 @@ Fetch bhavcopy archives from NSE/BSE.
     to speed up the fetch
 
 Sample usage:
-  fetchbhavcopy.py -d ..\data\dumpshavcopy -s "20 apr 2017"
-  fetchbhavcopy.py -d ..\data\dumpshavcopy -s "20 APR" #downloads from given date of current year
-  fetchbhavcopy.py -d ..\data\dumpshavcopy -s 2015 #from jan 1 2015
-  fetchbhavcopy.py -d ..\data\dumpshavcopy -s feb #from feb 1 of current year, case of month string doesnt matter
-  fetchbhavcopy.py -d ..\data\dumpshavcopy -a #all available data - 20+ years for equities
-  fetchbhavcopy.py -d ..\data\dumpshavcopy  #for last 2 weeks - default
+  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s "20 apr 2017"
+  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s "20 APR" #downloads from given date of current year
+  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s 2015 #from jan 1 2015
+  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s feb #from feb 1 of current year, case of month string doesnt matter
+  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -a #all available data - 20+ years for equities
+  fetchbhavcopy.py -d ..\data\dumps\bhavcopy  #for last 2 weeks - default
   fetchbhavcopy.py   #for last 2 weeks and use default dump directory
 
 optional arguments:
