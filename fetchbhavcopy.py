@@ -499,7 +499,7 @@ def store_url_to_file(hdr, url, fname, retry_file, not_found,istoday=False):
                         if not istoday:
                                 not_found.add(url)
         except:
-                log.error("Error fetching [%ss]: %s" % (fname, str(sys.exc_info()[0])))
+                log.error("Error fetching [%s]: %s" % (fname, str(sys.exc_info()[0])))
 
         if not isok and ecode != 404:
                 retry_file.write(url + "\n")
@@ -729,7 +729,7 @@ if __name__ == "__main__":
         os.makedirs(args.dump_dir, exist_ok=True)
         os.chdir(args.dump_dir)
 
-        #fetch_files("nse", "fo_rep", args)
+        #fetch_files("nse", "bndeod1", args)
         
         for k1, v1 in sdmap.items():
                 for k2,v2 in v1.items():
