@@ -19,6 +19,7 @@ import socket
 import urllib
 from urllib.request import Request, urlopen
 import logging
+from threading import Thread
 
 log = logging.getLogger(sys.argv[0])
 monthstr=['INVALID', 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
@@ -128,7 +129,7 @@ sdmap = {
                         'url': 'https://www.nseindia.com/content/indices',
                         'fname':'mcwb_%s%d',
                         'ext':'.zip',
-                        'start_date':datetime(2008,1,1).date(),
+                        'start_date':datetime(2010,1,1).date(),
                         'get_url':lambda urlt,d:urlt,
                         'get_file': lambda filet,d: filet%(monthstr[d.month].lower(),d.year-2000),
                         'freq':'month',
@@ -493,7 +494,7 @@ def store_url_to_file(hdr, url, fname, retry_file, not_found,istoday=False):
                         log.info('wrote [%s]' % fname)
                         isok=True
         except urllib.error.HTTPError as e:
-                log.error("Error fetching [%s]: %s" % (fname, e))
+                log.error("Error fetching [%s]: %s" % (url, e))
                 ecode=e.code
                 if ecode == 404:
                         if not istoday:
@@ -520,15 +521,22 @@ def fetch_files(exch, type, args):
         #set the global socket timeout
         socket.setdefaulttimeout(100)
         curdir=os.getcwd()
-        dirname="%s/%s" % (exch, type)
+        dirname=os.path.join(curdir, exch, type)
         try:
                 os.makedirs(dirname)
         except:
                 pass
-        os.chdir(dirname)
+        not_found_fname=os.path.join(dirname,"not_found.txt")
+        retry_fname=os.path.join(dirname,"retry.txt")
+        retry_proc_fname=os.path.join(dirname,"retry_proc.txt")
+        try:
+                os.remove(retry_proc_fname)
+        except:
+                pass
 
-        log.info("Processing %s %s" % (exch,type))
-        log.debug("Changed to dir [%s]" % os.getcwd())
+        prefix="[%s %s]" % (exch,type)
+        log.info("%s Starting Fetch" % prefix)
+
         hdr=hdrmap[exch]
         curmap=sdmap[exch][type]
         start_date=curmap['start_date'] if args.fetch_all else max(curmap['start_date'], args.start_date)
@@ -540,25 +548,31 @@ def fetch_files(exch, type, args):
         freq=curmap["freq"] if "freq" in curmap else None
         
         not_found=set()
-        if os.path.exists("not_found.txt"):
-                with open("not_found.txt" ,"r") as f:
+        if  args.retry:
+                try:
+                        os.remove(not_found_fname)
+                except:
+                        pass
+                
+        if os.path.exists(not_found_fname):
+                with open(not_found_fname ,"r") as f:
                         for l in f:
                                 not_found.add(l.rstrip())
 
         not_found_from_file=len(not_found)
         
-        if os.path.exists("retry.txt"):
-                os.rename("retry.txt", "retry.proc.txt")
-                with open("retry.txt", "w") as retry_file, open("not_found.txt","a+") as not_found_file, open("retry.proc.txt","r") as f :
+        if os.path.exists(retry_fname):
+                os.rename(retry_fname, retry_proc_fname)
+                with open(retry_fname, "w") as retry_file, open(not_found_fname,"a+") as not_found_file, open(retry_proc_fname,"r") as f :
                         for url in f:
                                 url = url.rstrip()
-                                fname=url.split('/')[-1]
+                                fname=os.path.join(dirname, url.split('/')[-1])
                                 store_url_to_file(hdr, url, fname, retry_file, not_found)
 
-                os.remove("retry.proc.txt")
+                os.remove(retry_proc_fname)
                 
         if len(not_found) > not_found_from_file:
-                with open("not_found.txt" ,"w") as f:
+                with open(not_found_fname ,"w") as f:
                         for l in not_found:
                                 f.write(l+"\n")
 
@@ -566,39 +580,46 @@ def fetch_files(exch, type, args):
         today=datetime.now().date()
         end_date = curmap['end_date']  if 'end_date' in curmap else today
 
-        log.info("Fetching from [%s] -> [%s]" % (str(start_date), str(end_date)))
+        log.info("%s Fetching from [%s] -> [%s]" % (prefix, str(start_date), str(end_date)))
         last_day=None
-        with open("retry.txt","w") as retry_file:
+        with open(retry_fname,"w") as retry_file:
                 for i in list(rrule(DAILY, dtstart=start_date, until=end_date, byweekday=(MO,TU,WE,TH,FR))):
                         if (i.month, i.day) in holidays:
-                                log.debug('Skipping holiday: %s' % str(i))
+                                log.debug('%s Skipping holiday: %s' % (prefix, str(i)))
                                 continue
 
                         if (freq is not None) and (last_day is not None) and getattr(last_day, freq) == getattr(i, freq):
                                 continue
                                 
-                        log.debug( 'Fetching for %s' % str(i))
-                        fname = get_file(filet,i)
+                        log.debug( '%s Fetching for %s' % (prefix, str(i)))
+                        bfname = get_file(filet,i)
+                        fname = os.path.join(dirname, bfname+ext)
 
-                        if  fexists(fname):
-                                log.debug("Skipping %s (already exists)" % fname)
+                        if  fexists(str(os.path.join(dirname,bfname))):
+                                log.debug("%s Skipping %s (already exists)" % (prefix, fname))
                                 last_day=i
                         else:
-                                url = "%s/%s%s" % (get_url(urlt,i), fname, ext)
+                                url = "%s/%s%s" % (get_url(urlt,i), bfname,ext)
                                 if  url  in not_found:
-                                        log.debug( 'In not found list, skipping  [%s]' % fname)
+                                        log.debug( '%s In not found list, skipping  [%s]' % (prefix, fname))
                                 else:
-                                        if store_url_to_file(hdr, url, fname+ext, retry_file, not_found,i.date()==today):
+                                        istoday=i.date()==today
+                                        if freq=='month':
+                                                istoday = i.date().month==today.month
+                                        elif freq=='year':
+                                                istoday = i.date().year==today.year
+                                                
+                                        if store_url_to_file(hdr, url, fname, retry_file, not_found, istoday):
                                                 last_day=i
 
         summary.append(("%s [%s]" % (exch, type), str(len(not_found))));
         if len(not_found) > not_found_from_file:
-                with open("not_found.txt" ,"w") as f:
+                with open(not_found_fname ,"w") as f:
                         for l in sorted(not_found):
                                 f.write(l+"\n")
 
-        os.chdir(curdir)         
-        log.debug("Changed back to dir [%s]" % os.getcwd())                
+        if os.path.getsize(retry_fname)==0:
+                os.remove(retry_fname)
 
 def valid_start_date(s):
     try:
@@ -695,8 +716,10 @@ if __name__ == "__main__":
         
         parser.add_argument("-d","--dump-dir",help="Directory to dump the files to", default="dumps/bhavcopy")
         parser.add_argument("-a","--fetch-all",action='store_true',help="Download from start of history")
+        parser.add_argument("-r","--retry",action='store_true',help="Delete not found data and retry to download all files again")
         parser.add_argument("-l","--log-to-file",action='store_true',help="Enable verbose logging to log file")
         parser.add_argument("-p","--print-data",action='store_true',help="Print table of preconfigured data for all known sources")
+        parser.add_argument("-t","--use-threads",action='store_true',help="Fetch the data using multiple threads")
         parser.add_argument("-s","--start-date",help="Specify a starting date \n"
                             + "Any valid year can be specified, but actual year used depends on data available \n"
                             + "Eg. NSE equities bhavcopy is available only from 1994 so year=max(year specified, 1994)\n"
@@ -729,12 +752,22 @@ if __name__ == "__main__":
         os.makedirs(args.dump_dir, exist_ok=True)
         os.chdir(args.dump_dir)
 
-        #fetch_files("nse", "bndeod1", args)
-        
-        for k1, v1 in sdmap.items():
-                for k2,v2 in v1.items():
-                        fetch_files(k1, k2, args)
+        if args.use_threads:
+                log.info("Using multithreaded fetch")
+                threads=[]
+                for k1, v1 in sdmap.items():
+                        for k2,v2 in v1.items():
+                                thr=Thread(target=fetch_files,args=(k1, k2, args))
+                                threads.append(thr)
+                                thr.start()
+                                
+                for t in threads:
+                        t.join()
+        else:
+                for k1, v1 in sdmap.items():
+                        for k2,v2 in v1.items():
+                                fetch_files(k1, k2, args)
                         
-        log.info("All fetch complete, summary:")
-        log.info(print_table(summary))
+        log.info("All fetch complete")
+        log.debug(print_table(summary))
 
