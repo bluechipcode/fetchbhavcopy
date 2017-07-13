@@ -620,6 +620,8 @@ def fetch_files(exch, type, args):
 
         if os.path.getsize(retry_fname)==0:
                 os.remove(retry_fname)
+                
+        log.info("%s Finished fetching" % (prefix))
 
 def valid_start_date(s):
     try:

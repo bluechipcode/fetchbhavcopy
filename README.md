@@ -276,8 +276,8 @@ Details of Data to be Fetched:
 
 ```
 ## Running the script
-```
-usage: fetchbhavcopy.py [-h] [-d DUMP_DIR] [-a] [-l] [-p] [-s START_DATE]
+usage: fetchbhavcopy.py [-h] [-d DUMP_DIR] [-a] [-r] [-l] [-p] [-t]
+                        [-s START_DATE]
 
 Fetch bhavcopy archives from NSE/BSE.
     By default, only files from last 2 weeks are fetched - can be overridden by  switches below.
@@ -285,12 +285,12 @@ Fetch bhavcopy archives from NSE/BSE.
     to speed up the fetch
 
 Sample usage:
-  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s "20 apr 2017"
-  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s "20 APR" #downloads from given date of current year
-  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s 2015 #from jan 1 2015
-  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -s feb #from feb 1 of current year, case of month string doesnt matter
-  fetchbhavcopy.py -d ..\data\dumps\bhavcopy -a #all available data - 20+ years for equities
-  fetchbhavcopy.py -d ..\data\dumps\bhavcopy  #for last 2 weeks - default
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -s "20 apr 2017"
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -s "20 APR" #downloads from given date of current year
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -s 2015 #from jan 1 2015
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -s feb #from feb 1 of current year, case of month string doesnt matter
+  fetchbhavcopy.py -d ..\data\dumpshavcopy -a #all available data - 20+ years for equities
+  fetchbhavcopy.py -d ..\data\dumpshavcopy  #for last 2 weeks - default
   fetchbhavcopy.py   #for last 2 weeks and use default dump directory
 
 optional arguments:
@@ -298,8 +298,10 @@ optional arguments:
   -d DUMP_DIR, --dump-dir DUMP_DIR
                         Directory to dump the files to (default: dumps/bhavcopy)
   -a, --fetch-all       Download from start of history (default: False)
+  -r, --retry           Delete not found data and retry to download all files again (default: False)
   -l, --log-to-file     Enable verbose logging to log file (default: False)
   -p, --print-data      Print table of preconfigured data for all known sources (default: False)
+  -t, --use-threads     Fetch the data using multiple threads (default: False)
   -s START_DATE, --start-date START_DATE
                         Specify a starting date 
                         Any valid year can be specified, but actual year used depends on data available 
@@ -309,5 +311,6 @@ optional arguments:
                         * mon yyyy (From day 1, eg. JAN 1999)
                         * dd mon yyyy (eg. 12 JAN 1999)
                         * mon (From current year, day 1 of given month, eg. JAN)
-                         (default: 2017-05-04)
+                         (default: 2017-06-29)
+```
 ```
