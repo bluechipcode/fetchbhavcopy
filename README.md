@@ -276,6 +276,7 @@ Details of Data to be Fetched:
 
 ```
 ## Running the script
+```
 usage: fetchbhavcopy.py [-h] [-d DUMP_DIR] [-a] [-r] [-l] [-p] [-t]
                         [-s START_DATE]
 
@@ -312,5 +313,5 @@ optional arguments:
                         * dd mon yyyy (eg. 12 JAN 1999)
                         * mon (From current year, day 1 of given month, eg. JAN)
                          (default: 2017-06-29)
-```
+
 ```
